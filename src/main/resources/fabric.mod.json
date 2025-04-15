@@ -21,5 +21,10 @@
     "java": ">=21",
     "minecraft": ">=${mc_version}",
     "meteor-client": "*"
-  }
+  },
+  "suggests": {
+    "litematica": "*",
+    "malilib": "*"
+  },
+  "accessWidener": "meteor-litematica-printer.accesswidener"
 }

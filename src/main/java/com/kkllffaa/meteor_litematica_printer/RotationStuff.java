@@ -1,7 +1,6 @@
 package com.kkllffaa.meteor_litematica_printer;
 
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -27,15 +26,15 @@ public class RotationStuff {
 	}
 	public static Rotation wrapAnglesToRelative(Rotation current, Rotation target) {
 		if (current.yawIsReallyClose(target)) {
-			return new Rotation(current.getYaw(), target.getPitch());
+			return new Rotation(current.yaw(), target.pitch());
 		}
 		return target.subtract(current).normalize().add(current);
 	}
 	public static Vec3d calcLookDirectionFromRotation(Rotation rotation) {
-		float flatZ = MathHelper.cos((-rotation.getYaw() * DEG_TO_RAD_F) - (float) Math.PI);
-		float flatX = MathHelper.sin((-rotation.getYaw() * DEG_TO_RAD_F) - (float) Math.PI);
-		float pitchBase = -MathHelper.cos(-rotation.getPitch() * DEG_TO_RAD_F);
-		float pitchHeight = MathHelper.sin(-rotation.getPitch() * DEG_TO_RAD_F);
+		float flatZ = MathHelper.cos((-rotation.yaw() * DEG_TO_RAD_F) - (float) Math.PI);
+		float flatX = MathHelper.sin((-rotation.yaw() * DEG_TO_RAD_F) - (float) Math.PI);
+		float pitchBase = -MathHelper.cos(-rotation.pitch() * DEG_TO_RAD_F);
+		float pitchHeight = MathHelper.sin(-rotation.pitch() * DEG_TO_RAD_F);
 		return new Vec3d(flatX * pitchBase, pitchHeight, flatZ * pitchBase);
 	}
 

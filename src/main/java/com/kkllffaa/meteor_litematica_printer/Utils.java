@@ -7,31 +7,47 @@ import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.state.property.Properties;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.Direction.Axis;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.RaycastContext.FluidHandling;
 import net.minecraft.world.RaycastContext.ShapeType;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static meteordevelopment.meteorclient.utils.world.BlockUtils.canPlace;
 
-//import baritone.api.utils.BetterBlockPos;
-//import baritone.api.utils.RayTraceUtils;
-//import baritone.api.utils.Rotation;
-//import baritone.api.utils.RotationUtils;
+public class Utils {
+    public static @NotNull Map<String, String> encodeBlockStateAsComponent(@NotNull BlockState state) {
+        Map<String, String> map = new HashMap<>();
+        for (Property<?> prop : state.getProperties()) {
+            Comparable<?> value = state.get(prop);
+            map.put(prop.getName(), getPropertyNameSafe(prop, value));
+        }
+        return map;
+    }
 
-public class MyUtils {
+    @SuppressWarnings("unchecked")
+    static <T extends Comparable<T>> String getPropertyNameSafe(Property<?> prop, Comparable<?> value) {
+        return ((Property<T>) prop).name((T) value);
+    }
 
-	public static boolean place(BlockPos blockPos, Direction direction, SlabType slabType, BlockHalf blockHalf, Direction blockHorizontalOrientation, Axis wantedAxies, boolean airPlace, boolean swingHand, boolean rotate, boolean clientSide, int range) {
+    public static float smoothApproach(float current, float target, float maxStep) {
+        float diff = Rotation.normalizeYaw(target - current);
+        diff = MathHelper.clamp(diff, -maxStep, maxStep);
+        return Rotation.normalizeYaw(current + diff);
+    }
+
+    public static boolean place(BlockPos blockPos, Direction direction, SlabType slabType, BlockHalf blockHalf, Direction blockHorizontalOrientation, Axis wantedAxies, boolean airPlace, boolean swingHand, boolean rotate, boolean clientSide, int range) {
 		if (mc.player == null) return false;
 		if (!canPlace(blockPos)) return false;
 
@@ -86,7 +102,7 @@ public class MyUtils {
      	        Vec3d playerHead = new Vec3d(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ());
 
      			Rotation rot = RotationStuff.calcRotationFromVec3d(playerHead, testHitPos, new Rotation(mc.player.getYaw(), mc.player.getPitch()));
-     			Direction testHorizontalDirection = getHorizontalDirectionFromYaw(rot.normalize().getYaw());
+     			Direction testHorizontalDirection = getHorizontalDirectionFromYaw(rot.normalize().yaw());
      			if (blockHorizontalOrientation != null
      					&& ( 	testHorizontalDirection.getAxis() != blockHorizontalOrientation.getAxis())) continue;
      			HitResult res = RotationStuff.rayTraceTowards(mc.player, rot, range);
@@ -112,7 +128,7 @@ public class MyUtils {
 
 		return true;
 	}
-    
+
     private static void place(BlockHitResult blockHitResult, boolean swing) {
         if (mc.player == null || mc.interactionManager == null || mc.getNetworkHandler() == null) return;
         boolean wasSneaking = mc.player.input.playerInput.sneak();
@@ -211,8 +227,6 @@ public class MyUtils {
 				|| block == Blocks.STRIPPED_DARK_OAK_LOG
 				;
 	}
-
-
 
 	/**
 	 * Normal behaviour in this case is considered as when blocks are placed they take direction opposite to players direction.
@@ -327,7 +341,7 @@ public class MyUtils {
      	        Vec3d playerHead = new Vec3d(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ());
      			Rotation rot = RotationStuff.calcRotationFromVec3d(playerHead, hitPos, new Rotation(mc.player.getYaw(), mc.player.getPitch()));
 
-				Direction testHorizontalDirection = getHorizontalDirectionFromYaw(rot.normalize().getYaw());
+				Direction testHorizontalDirection = getHorizontalDirectionFromYaw(rot.normalize().yaw());
 				if (placeAtState.getBlock() instanceof TrapdoorBlock && !(against != Direction.DOWN && against != Direction.UP) && !isPlayerOrientationDesired(placeAtState.getBlock(), blockHorizontalOrientation, testHorizontalDirection)
 						|| !(placeAtState.getBlock() instanceof TrapdoorBlock) && !isPlayerOrientationDesired(placeAtState.getBlock(), blockHorizontalOrientation, testHorizontalDirection)
 						) continue;
@@ -348,7 +362,6 @@ public class MyUtils {
 		}
 		return null;
 	}
-
 
 	public static Direction getPlaceSide(BlockPos blockPos, BlockState placeAtState, SlabType slabType, BlockHalf blockHalf, Direction blockHorizontalOrientation, Axis wantedAxies, Direction requiredDir) {
         for (Direction side : Direction.values()) {
@@ -384,7 +397,7 @@ public class MyUtils {
  	        Vec3d playerHead = new Vec3d(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ());
  			Rotation rot = RotationStuff.calcRotationFromVec3d(playerHead, hitPos, new Rotation(mc.player.getYaw(), mc.player.getPitch()));
 
-			Direction testHorizontalDirection = getHorizontalDirectionFromYaw(rot.normalize().getYaw());
+			Direction testHorizontalDirection = getHorizontalDirectionFromYaw(rot.normalize().yaw());
 
 			if (placeAtState.getBlock() instanceof TrapdoorBlock && !(side != Direction.DOWN && side != Direction.UP) && !isPlayerOrientationDesired(placeAtState.getBlock(), blockHorizontalOrientation, testHorizontalDirection)
 					|| !(placeAtState.getBlock() instanceof TrapdoorBlock) && !isPlayerOrientationDesired(placeAtState.getBlock(), blockHorizontalOrientation, testHorizontalDirection)

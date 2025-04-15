@@ -31,11 +31,15 @@ dependencies {
 
     //litematica
     //modImplementation "curse.maven:litematica-${project.litematica_projectid}:${project.litematica_fileid}"
-	modImplementation 'com.github.sakura-ryoko:litematica:1.21.4-0.21.3-sakura.2'
+	modImplementation 'com.github.sakura-ryoko:litematica:1.21.5-0.22.0-sakura.7'
     //modImplementation "fi.dy.masa.malilib:malilib-fabric-${project.minecraft_version}:${project.malilib_version}"
-	modImplementation 'com.github.sakura-ryoko:malilib:1.21.4-0.23.3-sakura.2'
+	modImplementation 'com.github.sakura-ryoko:malilib:1.21.5-0.24.0-sakura.8'
 
 
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/meteor-litematica-printer.accesswidener")
 }
 
 processResources {
